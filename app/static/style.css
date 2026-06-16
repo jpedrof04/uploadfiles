@@ -1,0 +1,202 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #f0f2f5;
+    color: #333;
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+header h1 {
+    font-size: 2rem;
+    color: #1a1a2e;
+}
+
+.subtitle {
+    color: #666;
+    font-size: 0.95rem;
+}
+
+.flash-messages {
+    margin-bottom: 20px;
+}
+
+.flash {
+    background: #d4edda;
+    color: #155724;
+    padding: 10px 16px;
+    border-radius: 6px;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+}
+
+.upload-section {
+    background: white;
+    border-radius: 10px;
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+.upload-section h2 {
+    font-size: 1.1rem;
+    margin-bottom: 16px;
+    color: #1a1a2e;
+}
+
+.upload-form {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.file-input-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    min-width: 200px;
+}
+
+.file-input-wrapper input[type="file"] {
+    display: none;
+}
+
+.file-label {
+    display: inline-block;
+    padding: 8px 16px;
+    background: #e8e8e8;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    white-space: nowrap;
+}
+
+.file-label:hover {
+    background: #dcdcdc;
+}
+
+.file-name {
+    font-size: 0.85rem;
+    color: #666;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 300px;
+}
+
+.btn {
+    display: inline-block;
+    padding: 8px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: background 0.2s;
+}
+
+.btn-primary {
+    background: #1a73e8;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #1558b0;
+}
+
+.files-section {
+    background: white;
+    border-radius: 10px;
+    padding: 24px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+.files-section h2 {
+    font-size: 1.1rem;
+    margin-bottom: 16px;
+    color: #1a1a2e;
+}
+
+.file-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.file-table th {
+    text-align: left;
+    padding: 8px 12px;
+    border-bottom: 2px solid #eee;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    color: #888;
+    letter-spacing: 0.5px;
+}
+
+.file-table td {
+    padding: 12px;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 0.9rem;
+}
+
+.file-name-cell {
+    font-weight: 500;
+    color: #1a1a2e;
+}
+
+.actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.btn-small {
+    padding: 5px 12px;
+    font-size: 0.8rem;
+}
+
+.btn-download {
+    background: #34a853;
+    color: white;
+}
+
+.btn-download:hover {
+    background: #2d8f47;
+}
+
+.btn-delete {
+    background: #ea4335;
+    color: white;
+}
+
+.btn-delete:hover {
+    background: #c5221f;
+}
+
+.inline-form {
+    display: inline;
+}
+
+.empty-state {
+    text-align: center;
+    color: #999;
+    padding: 40px 0;
+    font-size: 0.95rem;
+}
