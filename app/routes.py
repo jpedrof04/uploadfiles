@@ -3,18 +3,40 @@ import uuid
 import hashlib
 import mimetypes
 import zipfile
-from flask import Blueprint, render_template, request, redirect, url_for, send_file, flash, current_app
+from functools import wraps
+from flask import Blueprint, render_template, request, redirect, url_for, send_file, flash, current_app, session
 from werkzeug.utils import secure_filename
 from app.models import insert_file, get_all_files, get_file, delete_file_record
 
 main = Blueprint('main', __name__)
 
+def login_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if not session.get('authenticated'):
+            return redirect(url_for('main.login'))
+        return f(*args, **kwargs)
+    return decorated
+
+@main.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        if username == current_app.config['AUTH_USERNAME'] and password == current_app.config['AUTH_PASSWORD']:
+            session['authenticated'] = True
+            return redirect(url_for('main.index'))
+        flash('Invalid credentials')
+    return render_template('login.html')
+
 @main.route('/')
+@login_required
 def index():
     files = get_all_files()
     return render_template('index.html', files=files)
 
 @main.route('/upload', methods=['POST'])
+@login_required
 def upload():
     if 'file' not in request.files:
         flash('No file selected')
@@ -23,6 +45,11 @@ def upload():
     file = request.files['file']
     if file.filename == '':
         flash('No file selected')
+        return redirect(url_for('main.index'))
+
+    confirm_pw = request.form.get('confirm_password')
+    if confirm_pw != 'kraker123':
+        flash('Invalid confirmation password')
         return redirect(url_for('main.index'))
 
     if file:
@@ -59,6 +86,7 @@ def upload():
     return redirect(url_for('main.index'))
 
 @main.route('/download/<int:file_id>')
+@login_required
 def download(file_id):
     file_record = get_file(file_id)
     if file_record is None:
@@ -77,7 +105,13 @@ def download(file_id):
     )
 
 @main.route('/delete/<int:file_id>', methods=['POST'])
+@login_required
 def delete(file_id):
+    confirm_pw = request.form.get('confirm_password')
+    if confirm_pw != 'kraker123':
+        flash('Invalid confirmation password')
+        return redirect(url_for('main.index'))
+
     file_record = get_file(file_id)
     if file_record:
         zip_path = os.path.join(current_app.config['UPLOAD_FOLDER'], file_record['zip_name'])

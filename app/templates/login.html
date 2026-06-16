@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="login-box">
+    <form method="post">
+        <div class="login-field">
+            <label for="username">Username</label>
+            <input type="text" name="username" id="username" required autofocus>
+        </div>
+        <div class="login-field">
+            <label for="password">Password</label>
+            <input type="password" name="password" id="password" required>
+        </div>
+        <button type="submit" class="btn">Login</button>
+    </form>
+</div>
+{% endblock %}

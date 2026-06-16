@@ -156,6 +156,33 @@ body {
     color: #a00;
 }
 
+.confirm-pw {
+    padding: 2px 6px;
+    font-size: 12px;
+    border: 1px solid;
+    border-color: #808080 #ffffff #ffffff #808080;
+    background: #fff;
+    width: 130px;
+    font-family: inherit;
+}
+
+.confirm-pw-sm {
+    padding: 1px 4px;
+    font-size: 11px;
+    border: 1px solid;
+    border-color: #808080 #ffffff #ffffff #808080;
+    background: #fff;
+    width: 80px;
+    font-family: inherit;
+    vertical-align: middle;
+}
+
+.delete-form {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
 .inline {
     display: inline;
 }
@@ -226,6 +253,44 @@ body {
 
 .col-actions .btn-sm {
     margin-left: 4px;
+}
+
+.login-box {
+    max-width: 300px;
+    margin: 40px auto;
+    text-align: center;
+}
+
+.login-box form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.login-field {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    text-align: left;
+}
+
+.login-field label {
+    font-weight: bold;
+    font-size: 12px;
+}
+
+.login-field input {
+    padding: 4px 6px;
+    font-size: 12px;
+    border: 1px solid;
+    border-color: #808080 #ffffff #ffffff #808080;
+    background: #fff;
+    font-family: inherit;
+}
+
+.login-box .btn {
+    align-self: center;
+    margin-top: 4px;
 }
 
 .empty {
