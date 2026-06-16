@@ -1,55 +1,69 @@
 {% extends "base.html" %}
 
-{% block content %}
-<section class="upload-section">
-    <h2>Upload a file</h2>
-    <form action="{{ url_for('main.upload') }}" method="post" enctype="multipart/form-data" class="upload-form">
-        <div class="file-input-wrapper">
-            <input type="file" name="file" id="file-input" required>
-            <label for="file-input" class="file-label">Choose file</label>
-            <span id="file-name" class="file-name">No file selected</span>
-        </div>
-        <button type="submit" class="btn btn-primary">Upload & Zip</button>
-    </form>
-</section>
+{% macro filesize(bytes) -%}
+    {%- if bytes >= 1073741824 -%}
+        {{ (bytes / 1073741824)|round(2) }} GB
+    {%- elif bytes >= 1048576 -%}
+        {{ (bytes / 1048576)|round(2) }} MB
+    {%- elif bytes >= 1024 -%}
+        {{ (bytes / 1024)|round(1) }} KB
+    {%- else -%}
+        {{ bytes }} B
+    {%- endif -%}
+{%- endmacro %}
 
-<section class="files-section">
-    <h2>Uploaded files</h2>
-    {% if files %}
-        <table class="file-table">
-            <thead>
-                <tr>
-                    <th>File</th>
-                    <th>Size</th>
-                    <th>Date</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for file in files %}
-                <tr>
-                    <td class="file-name-cell">{{ file.original_name }}</td>
-                    <td>{{ (file.file_size / 1024)|round(1) }} KB</td>
-                    <td>{{ file.uploaded_at[:19] }}</td>
-                    <td class="actions">
-                        <a href="{{ url_for('main.download', file_id=file.id) }}" class="btn btn-small btn-download">Download ZIP</a>
-                        <form action="{{ url_for('main.delete', file_id=file.id) }}" method="post" class="inline-form" onsubmit="return confirm('Delete this file?')">
-                            <button type="submit" class="btn btn-small btn-delete">Delete</button>
-                        </form>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    {% else %}
-        <p class="empty-state">No files uploaded yet. Upload a file to get started!</p>
-    {% endif %}
-</section>
+{% block content %}
+<div class="toolbar">
+    <form action="{{ url_for('main.upload') }}" method="post" enctype="multipart/form-data" class="upload-form">
+        <input type="file" name="file" id="file-input" required>
+        <label for="file-input" class="file-label">Browse...</label>
+        <span id="file-name" class="file-name">No file selected</span>
+        <button type="submit" class="btn">Upload & Zip</button>
+    </form>
+</div>
+
+<div class="section-header">Uploaded files</div>
+
+{% if files %}
+<table class="file-table">
+    <thead>
+        <tr>
+            <th>File</th>
+            <th>Size</th>
+            <th>ZIP size</th>
+            <th>Ratio</th>
+            <th>Date</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for file in files %}
+        <tr>
+            <td class="col-name">
+                <span class="file-link" onclick="document.getElementById('dl-{{ file.id }}').click()">{{ file.original_name }}</span>
+                <a id="dl-{{ file.id }}" href="{{ url_for('main.download', file_id=file.id) }}" style="display:none"></a>
+            </td>
+            <td>{{ filesize(file.file_size) }}</td>
+            <td>{{ filesize(file.zip_size) }}</td>
+            <td>{% if file.file_size > 0 %}{{ ((file.zip_size / file.file_size) * 100)|round(1) }}%{% else %}0%{% endif %}</td>
+            <td class="col-date">{{ file.uploaded_at[:10] }}</td>
+            <td class="col-actions">
+                <a href="{{ url_for('main.download', file_id=file.id) }}" class="btn btn-sm">Download</a>
+                <form action="{{ url_for('main.delete', file_id=file.id) }}" method="post" class="inline" onsubmit="return confirm('Delete {{ file.original_name }}?')">
+                    <button type="submit" class="btn btn-sm btn-del">Delete</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<div class="empty">No files uploaded yet.</div>
+{% endif %}
 
 <script>
     document.getElementById('file-input').addEventListener('change', function(e) {
-        var fileName = e.target.files[0] ? e.target.files[0].name : 'No file selected';
-        document.getElementById('file-name').textContent = fileName;
+        document.getElementById('file-name').textContent = e.target.files[0] ? e.target.files[0].name : 'No file selected';
     });
 </script>
 {% endblock %}

@@ -5,198 +5,232 @@
 }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: #f0f2f5;
-    color: #333;
-    line-height: 1.6;
+    font-family: 'Segoe UI', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+    font-size: 12px;
+    background: #4a4a4a;
+    color: #1a1a1a;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 30px 20px;
 }
 
-.container {
-    max-width: 800px;
-    margin: 40px auto;
-    padding: 0 20px;
+.window {
+    width: 100%;
+    max-width: 900px;
+    background: #d4d0c8;
+    border: 2px solid;
+    border-color: #ffffff #808080 #808080 #ffffff;
+    box-shadow: 2px 2px 8px rgba(0,0,0,0.4);
 }
 
-header {
-    text-align: center;
-    margin-bottom: 30px;
+.window-titlebar {
+    background: linear-gradient(90deg, #1a3a6b, #2a6a9a);
+    color: #fff;
+    padding: 4px 6px;
+    display: flex;
+    align-items: center;
+    font-size: 12px;
+    font-weight: bold;
+    user-select: none;
 }
 
-header h1 {
-    font-size: 2rem;
-    color: #1a1a2e;
+.window-title {
+    flex: 1;
 }
 
-.subtitle {
-    color: #666;
-    font-size: 0.95rem;
+.window-buttons {
+    display: flex;
+    gap: 2px;
 }
 
-.flash-messages {
-    margin-bottom: 20px;
+.winbtn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 16px;
+    font-size: 11px;
+    background: #d4d0c8;
+    color: #1a1a1a;
+    border: 1px solid;
+    border-color: #ffffff #808080 #808080 #ffffff;
+    cursor: pointer;
+}
+
+.winbtn:active {
+    border-color: #808080 #ffffff #ffffff #808080;
+}
+
+.window-body {
+    padding: 12px;
+    min-height: 300px;
+}
+
+.window-statusbar {
+    background: #d4d0c8;
+    border-top: 1px solid #808080;
+    padding: 3px 8px;
+    font-size: 11px;
+    color: #555;
 }
 
 .flash {
-    background: #d4edda;
-    color: #155724;
-    padding: 10px 16px;
-    border-radius: 6px;
+    background: #ffffcc;
+    border: 1px solid #cccc00;
+    padding: 6px 10px;
     margin-bottom: 8px;
-    font-size: 0.9rem;
+    font-size: 12px;
 }
 
-.upload-section {
-    background: white;
-    border-radius: 10px;
-    padding: 24px;
-    margin-bottom: 24px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-}
-
-.upload-section h2 {
-    font-size: 1.1rem;
-    margin-bottom: 16px;
-    color: #1a1a2e;
+.toolbar {
+    background: #c0bfb7;
+    border: 1px solid;
+    border-color: #ffffff #808080 #808080 #ffffff;
+    padding: 8px;
+    margin-bottom: 12px;
 }
 
 .upload-form {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 8px;
     flex-wrap: wrap;
 }
 
-.file-input-wrapper {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex: 1;
-    min-width: 200px;
-}
-
-.file-input-wrapper input[type="file"] {
+.upload-form input[type="file"] {
     display: none;
 }
 
 .file-label {
     display: inline-block;
-    padding: 8px 16px;
-    background: #e8e8e8;
-    border-radius: 6px;
+    padding: 3px 12px;
+    background: #d4d0c8;
+    border: 1px solid;
+    border-color: #ffffff #808080 #808080 #ffffff;
     cursor: pointer;
-    font-size: 0.9rem;
-    white-space: nowrap;
+    font-size: 12px;
+    user-select: none;
 }
 
-.file-label:hover {
-    background: #dcdcdc;
+.file-label:active {
+    border-color: #808080 #ffffff #ffffff #808080;
 }
 
 .file-name {
-    font-size: 0.85rem;
-    color: #666;
+    color: #555;
+    font-size: 12px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    max-width: 300px;
+    max-width: 250px;
+    flex: 1;
 }
 
 .btn {
     display: inline-block;
-    padding: 8px 20px;
-    border: none;
-    border-radius: 6px;
+    padding: 3px 14px;
+    background: #d4d0c8;
+    border: 1px solid;
+    border-color: #ffffff #808080 #808080 #ffffff;
     cursor: pointer;
-    font-size: 0.9rem;
-    font-weight: 500;
+    font-family: inherit;
+    font-size: 12px;
     text-decoration: none;
-    transition: background 0.2s;
+    color: #1a1a1a;
+    user-select: none;
+    line-height: 1.4;
 }
 
-.btn-primary {
-    background: #1a73e8;
-    color: white;
+.btn:active {
+    border-color: #808080 #ffffff #ffffff #808080;
 }
 
-.btn-primary:hover {
-    background: #1558b0;
+.btn-sm {
+    padding: 2px 10px;
+    font-size: 11px;
 }
 
-.files-section {
-    background: white;
-    border-radius: 10px;
-    padding: 24px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+.btn-del {
+    color: #a00;
 }
 
-.files-section h2 {
-    font-size: 1.1rem;
-    margin-bottom: 16px;
-    color: #1a1a2e;
+.inline {
+    display: inline;
+}
+
+.section-header {
+    font-size: 12px;
+    font-weight: bold;
+    color: #1a1a1a;
+    padding: 4px 0;
+    margin-bottom: 6px;
+    border-bottom: 1px solid #808080;
 }
 
 .file-table {
     width: 100%;
     border-collapse: collapse;
+    font-size: 12px;
 }
 
 .file-table th {
     text-align: left;
-    padding: 8px 12px;
-    border-bottom: 2px solid #eee;
-    font-size: 0.8rem;
-    text-transform: uppercase;
-    color: #888;
-    letter-spacing: 0.5px;
+    padding: 4px 8px;
+    background: #c0bfb7;
+    border: 1px solid;
+    border-color: #ffffff #808080 #808080 #ffffff;
+    font-weight: bold;
+    font-size: 11px;
+    white-space: nowrap;
 }
 
 .file-table td {
-    padding: 12px;
-    border-bottom: 1px solid #f0f0f0;
-    font-size: 0.9rem;
+    padding: 4px 8px;
+    border: 1px solid #a0a0a0;
+    vertical-align: middle;
 }
 
-.file-name-cell {
-    font-weight: 500;
-    color: #1a1a2e;
+.file-table tr:nth-child(even) td {
+    background: #e0dcd4;
 }
 
-.actions {
-    display: flex;
-    gap: 8px;
-    align-items: center;
+.file-table tr:hover td {
+    background: #c0d0e8;
 }
 
-.btn-small {
-    padding: 5px 12px;
-    font-size: 0.8rem;
+.col-name {
+    font-weight: bold;
 }
 
-.btn-download {
-    background: #34a853;
-    color: white;
+.file-link {
+    color: #1a3a6b;
+    cursor: pointer;
+    text-decoration: underline;
 }
 
-.btn-download:hover {
-    background: #2d8f47;
+.file-link:hover {
+    color: #2a6a9a;
 }
 
-.btn-delete {
-    background: #ea4335;
-    color: white;
+.col-date {
+    color: #555;
+    white-space: nowrap;
 }
 
-.btn-delete:hover {
-    background: #c5221f;
+.col-actions {
+    white-space: nowrap;
+    text-align: right;
 }
 
-.inline-form {
-    display: inline;
+.col-actions .btn-sm {
+    margin-left: 4px;
 }
 
-.empty-state {
+.empty {
     text-align: center;
-    color: #999;
+    color: #888;
     padding: 40px 0;
-    font-size: 0.95rem;
+    font-style: italic;
 }

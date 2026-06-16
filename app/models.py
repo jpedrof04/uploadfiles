@@ -20,17 +20,20 @@ def init_db(database_path):
             original_name TEXT NOT NULL,
             zip_name TEXT NOT NULL,
             file_size INTEGER DEFAULT 0,
+            zip_size INTEGER DEFAULT 0,
+            mime_type TEXT DEFAULT 'unknown',
+            file_hash TEXT DEFAULT '',
             uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     ''')
     conn.commit()
     conn.close()
 
-def insert_file(original_name, zip_name, file_size):
+def insert_file(original_name, zip_name, file_size, zip_size, mime_type, file_hash):
     db = get_db()
     db.execute(
-        'INSERT INTO files (original_name, zip_name, file_size) VALUES (?, ?, ?)',
-        (original_name, zip_name, file_size)
+        'INSERT INTO files (original_name, zip_name, file_size, zip_size, mime_type, file_hash) VALUES (?, ?, ?, ?, ?, ?)',
+        (original_name, zip_name, file_size, zip_size, mime_type, file_hash)
     )
     db.commit()
     return db.execute('SELECT last_insert_rowid()').fetchone()[0]

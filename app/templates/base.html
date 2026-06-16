@@ -7,25 +7,28 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>Upload App</h1>
-            <p class="subtitle">Upload, zip & download files</p>
-        </header>
-
-        {% with messages = get_flashed_messages() %}
-            {% if messages %}
-                <div class="flash-messages">
+    <div class="window">
+        <div class="window-titlebar">
+            <span class="window-title">Upload App</span>
+            <div class="window-buttons">
+                <span class="winbtn winbtn-min">_</span>
+                <span class="winbtn winbtn-max">□</span>
+                <span class="winbtn winbtn-close">✕</span>
+            </div>
+        </div>
+        <div class="window-body">
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
                     {% for message in messages %}
-                        <div class="flash">{{ message }}</div>
+                    <div class="flash">{{ message }}</div>
                     {% endfor %}
-                </div>
-            {% endif %}
-        {% endwith %}
-
-        <main>
+                {% endif %}
+            {% endwith %}
             {% block content %}{% endblock %}
-        </main>
+        </div>
+        <div class="window-statusbar">
+            <span class="status-text">Ready</span>
+        </div>
     </div>
 </body>
 </html>

@@ -1,5 +1,7 @@
 import os
 import uuid
+import hashlib
+import mimetypes
 import zipfile
 from flask import Blueprint, render_template, request, redirect, url_for, send_file, flash, current_app
 from werkzeug.utils import secure_filename
@@ -35,13 +37,23 @@ def upload():
         file.save(temp_path)
 
         file_size = os.path.getsize(temp_path)
+        zip_size = 0
+
+        mime_type = mimetypes.guess_type(original_name)[0] or 'application/octet-stream'
+
+        sha256 = hashlib.sha256()
+        with open(temp_path, 'rb') as f:
+            for chunk in iter(lambda: f.read(8192), b''):
+                sha256.update(chunk)
+        file_hash = sha256.hexdigest()
 
         with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zf:
             zf.write(temp_path, original_name)
 
+        zip_size = os.path.getsize(zip_path)
         os.remove(temp_path)
 
-        insert_file(original_name, zip_filename, file_size)
+        insert_file(original_name, zip_filename, file_size, zip_size, mime_type, file_hash)
         flash('File uploaded and zipped successfully!')
 
     return redirect(url_for('main.index'))
