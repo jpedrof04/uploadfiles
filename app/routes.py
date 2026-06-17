@@ -66,7 +66,7 @@ def upload():
         return redirect(url_for('main.index'))
 
     confirm_pw = request.form.get('confirm_password')
-    if confirm_pw != 'kraker123':
+    if not check_password_hash(current_app.config['CONFIRM_PASSWORD'], confirm_pw):
         flash('Invalid confirmation password')
         return redirect(url_for('main.index'))
 
@@ -116,7 +116,7 @@ def upload_folder():
         return redirect(url_for('main.index'))
 
     confirm_pw = request.form.get('confirm_password')
-    if confirm_pw != 'kraker123':
+    if not check_password_hash(current_app.config['CONFIRM_PASSWORD'], confirm_pw):
         flash('Invalid confirmation password')
         return redirect(url_for('main.index'))
 
