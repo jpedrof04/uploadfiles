@@ -105,13 +105,13 @@ def upload():
 @main.route('/upload-folder', methods=['POST'])
 @login_required
 def upload_folder():
-    if 'folder' not in request.files:
-        flash('No folder selected')
-        return redirect(url_for('main.index'))
+    folder_files = request.files.getlist('folder')
+    has_files = folder_files and folder_files[0].filename != ''
+    empty_folders_raw = request.form.get('empty_folders', '').strip()
+    empty_folder_list = [f.strip() for f in empty_folders_raw.split(',') if f.strip()] if empty_folders_raw else []
 
-    files = request.files.getlist('folder')
-    if not files or files[0].filename == '':
-        flash('No folder selected')
+    if not has_files and not empty_folder_list:
+        flash('Select a folder or specify empty folders')
         return redirect(url_for('main.index'))
 
     confirm_pw = request.form.get('confirm_password')
@@ -119,7 +119,11 @@ def upload_folder():
         flash('Invalid confirmation password')
         return redirect(url_for('main.index'))
 
-    folder_name = os.path.basename(os.path.dirname(files[0].filename)) or 'folder'
+    if has_files:
+        folder_name = os.path.basename(os.path.dirname(folder_files[0].filename)) or 'folder'
+    else:
+        folder_name = empty_folder_list[0].split('/')[0].split('\\')[0] or 'folder'
+
     unique_id = str(uuid.uuid4())
     zip_filename = f"{unique_id}.zip"
     zip_path = os.path.join(current_app.config['UPLOAD_FOLDER'], zip_filename)
@@ -129,7 +133,11 @@ def upload_folder():
 
     total_size = 0
     saved_paths = []
-    for f in files:
+    has_any_file = False
+    for f in folder_files:
+        if f.filename == '':
+            continue
+        has_any_file = True
         rel_path = f.filename
         save_path = os.path.join(temp_dir, rel_path)
         os.makedirs(os.path.dirname(save_path), exist_ok=True)
@@ -137,19 +145,20 @@ def upload_folder():
         total_size += os.path.getsize(save_path)
         saved_paths.append((rel_path, save_path))
 
-    original_name = folder_name
-    file_size = total_size
-
     sha256 = hashlib.sha256()
     for rel_path, save_path in saved_paths:
         with open(save_path, 'rb') as f:
             for chunk in iter(lambda: f.read(8192), b''):
                 sha256.update(chunk)
-    file_hash = sha256.hexdigest()
+    file_hash = sha256.hexdigest() if saved_paths else hashlib.sha256(b'').hexdigest()
 
     with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zf:
         for rel_path, save_path in saved_paths:
             zf.write(save_path, rel_path)
+        for ef in empty_folder_list:
+            ef_normalized = ef.replace('\\', '/')
+            info = zipfile.ZipInfo(ef_normalized + '/')
+            zf.writestr(info, '')
 
     zip_size = os.path.getsize(zip_path)
 
@@ -161,7 +170,7 @@ def upload_folder():
         pass
 
     mime_type = 'application/x-zip-compressed'
-    insert_file(original_name + '.zip', zip_filename, file_size, zip_size, mime_type, file_hash)
+    insert_file(folder_name + '.zip', zip_filename, total_size, zip_size, mime_type, file_hash)
     flash('Folder uploaded and zipped successfully!')
 
     return redirect(url_for('main.index'))
