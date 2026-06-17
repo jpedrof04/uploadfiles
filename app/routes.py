@@ -6,6 +6,7 @@ import zipfile
 from functools import wraps
 from flask import Blueprint, render_template, request, redirect, url_for, send_file, flash, current_app, session
 from werkzeug.utils import secure_filename
+from werkzeug.security import check_password_hash
 from app.models import insert_file, get_all_files, get_file, delete_file_record
 
 main = Blueprint('main', __name__)
@@ -33,7 +34,7 @@ def login():
         username = request.form.get('username')
         password = request.form.get('password')
         for user in current_app.config['AUTH_USERS']:
-            if user['username'] == username and user['password'] == password:
+            if user['username'] == username and check_password_hash(user['password'], password):
                 session['authenticated'] = True
                 session['username'] = user['username']
                 session['role'] = user.get('role', 'prof')
