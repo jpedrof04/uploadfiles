@@ -21,6 +21,13 @@
         <input type="password" name="confirm_password" placeholder="Confirm password" required class="confirm-pw">
         <button type="submit" class="btn">Upload & Zip</button>
     </form>
+    <form action="{{ url_for('main.upload_folder') }}" method="post" enctype="multipart/form-data" class="upload-form" style="margin-top:6px">
+        <input type="file" name="folder" id="folder-input" webkitdirectory required>
+        <label for="folder-input" class="file-label">Browse Folder...</label>
+        <span id="folder-name" class="file-name">No folder selected</span>
+        <input type="password" name="confirm_password" placeholder="Confirm password" required class="confirm-pw">
+        <button type="submit" class="btn">Upload Folder & Zip</button>
+    </form>
 </div>
 
 <div class="section-header">Uploaded files</div>
@@ -50,10 +57,11 @@
             <td class="col-date">{{ file.uploaded_at[:10] }}</td>
             <td class="col-actions">
                 <a href="{{ url_for('main.download', file_id=file.id) }}" class="btn btn-sm">Download</a>
+                {% if session.role == 'admin' %}
                 <form action="{{ url_for('main.delete', file_id=file.id) }}" method="post" class="inline delete-form" onsubmit="return confirm('Delete {{ file.original_name }}?')">
-                    <input type="password" name="confirm_password" placeholder="Password" required class="confirm-pw-sm">
                     <button type="submit" class="btn btn-sm btn-del">Delete</button>
                 </form>
+                {% endif %}
             </td>
         </tr>
         {% endfor %}
@@ -63,9 +71,24 @@
 <div class="empty">No files uploaded yet.</div>
 {% endif %}
 
+{% if files and session.role == 'admin' %}
+<div style="margin-top:10px; text-align:right">
+    <form action="{{ url_for('main.delete_all') }}" method="post" class="inline" onsubmit="return confirm('Delete ALL files?')">
+        <button type="submit" class="btn btn-del">Delete All Files</button>
+    </form>
+</div>
+{% endif %}
+
 <script>
     document.getElementById('file-input').addEventListener('change', function(e) {
         document.getElementById('file-name').textContent = e.target.files[0] ? e.target.files[0].name : 'No file selected';
+    });
+    document.getElementById('folder-input').addEventListener('change', function(e) {
+        var names = [];
+        for (var i = 0; i < e.target.files.length; i++) {
+            names.push(e.target.files[i].webkitRelativePath || e.target.files[i].name);
+        }
+        document.getElementById('folder-name').textContent = names.length ? names.length + ' file(s)' : 'No folder selected';
     });
 </script>
 {% endblock %}

@@ -18,16 +18,33 @@ def login_required(f):
         return f(*args, **kwargs)
     return decorated
 
+def admin_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if session.get('role') != 'admin':
+            flash('Access denied')
+            return redirect(url_for('main.index'))
+        return f(*args, **kwargs)
+    return decorated
+
 @main.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
-        if username == current_app.config['AUTH_USERNAME'] and password == current_app.config['AUTH_PASSWORD']:
-            session['authenticated'] = True
-            return redirect(url_for('main.index'))
+        for user in current_app.config['AUTH_USERS']:
+            if user['username'] == username and user['password'] == password:
+                session['authenticated'] = True
+                session['username'] = user['username']
+                session['role'] = user.get('role', 'prof')
+                return redirect(url_for('main.index'))
         flash('Invalid credentials')
     return render_template('login.html')
+
+@main.route('/logout')
+def logout():
+    session.clear()
+    return redirect(url_for('main.login'))
 
 @main.route('/')
 @login_required
@@ -85,6 +102,70 @@ def upload():
 
     return redirect(url_for('main.index'))
 
+@main.route('/upload-folder', methods=['POST'])
+@login_required
+def upload_folder():
+    if 'folder' not in request.files:
+        flash('No folder selected')
+        return redirect(url_for('main.index'))
+
+    files = request.files.getlist('folder')
+    if not files or files[0].filename == '':
+        flash('No folder selected')
+        return redirect(url_for('main.index'))
+
+    confirm_pw = request.form.get('confirm_password')
+    if confirm_pw != 'kraker123':
+        flash('Invalid confirmation password')
+        return redirect(url_for('main.index'))
+
+    folder_name = os.path.basename(os.path.dirname(files[0].filename)) or 'folder'
+    unique_id = str(uuid.uuid4())
+    zip_filename = f"{unique_id}.zip"
+    zip_path = os.path.join(current_app.config['UPLOAD_FOLDER'], zip_filename)
+
+    temp_dir = os.path.join(current_app.config['UPLOAD_FOLDER'], 'temp', unique_id)
+    os.makedirs(temp_dir, exist_ok=True)
+
+    total_size = 0
+    saved_paths = []
+    for f in files:
+        rel_path = f.filename
+        save_path = os.path.join(temp_dir, rel_path)
+        os.makedirs(os.path.dirname(save_path), exist_ok=True)
+        f.save(save_path)
+        total_size += os.path.getsize(save_path)
+        saved_paths.append((rel_path, save_path))
+
+    original_name = folder_name
+    file_size = total_size
+
+    sha256 = hashlib.sha256()
+    for rel_path, save_path in saved_paths:
+        with open(save_path, 'rb') as f:
+            for chunk in iter(lambda: f.read(8192), b''):
+                sha256.update(chunk)
+    file_hash = sha256.hexdigest()
+
+    with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zf:
+        for rel_path, save_path in saved_paths:
+            zf.write(save_path, rel_path)
+
+    zip_size = os.path.getsize(zip_path)
+
+    for _, save_path in saved_paths:
+        os.remove(save_path)
+    try:
+        os.rmdir(temp_dir)
+    except:
+        pass
+
+    mime_type = 'application/x-zip-compressed'
+    insert_file(original_name + '.zip', zip_filename, file_size, zip_size, mime_type, file_hash)
+    flash('Folder uploaded and zipped successfully!')
+
+    return redirect(url_for('main.index'))
+
 @main.route('/download/<int:file_id>')
 @login_required
 def download(file_id):
@@ -106,12 +187,8 @@ def download(file_id):
 
 @main.route('/delete/<int:file_id>', methods=['POST'])
 @login_required
+@admin_required
 def delete(file_id):
-    confirm_pw = request.form.get('confirm_password')
-    if confirm_pw != 'kraker123':
-        flash('Invalid confirmation password')
-        return redirect(url_for('main.index'))
-
     file_record = get_file(file_id)
     if file_record:
         zip_path = os.path.join(current_app.config['UPLOAD_FOLDER'], file_record['zip_name'])
@@ -120,4 +197,17 @@ def delete(file_id):
         delete_file_record(file_id)
         flash('File deleted')
 
+    return redirect(url_for('main.index'))
+
+@main.route('/delete-all', methods=['POST'])
+@login_required
+@admin_required
+def delete_all():
+    files = get_all_files()
+    for file_record in files:
+        zip_path = os.path.join(current_app.config['UPLOAD_FOLDER'], file_record['zip_name'])
+        if os.path.exists(zip_path):
+            os.remove(zip_path)
+        delete_file_record(file_record['id'])
+    flash('All files deleted')
     return redirect(url_for('main.index'))

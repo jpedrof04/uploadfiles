@@ -11,14 +11,11 @@ def create_app():
     app.config['SESSION_PERMANENT'] = False
 
     auth_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), '.auth.json')
+    app.config['AUTH_USERS'] = []
     if os.path.exists(auth_path):
         with open(auth_path) as f:
             auth_data = json.load(f)
-        app.config['AUTH_USERNAME'] = auth_data.get('username', '')
-        app.config['AUTH_PASSWORD'] = auth_data.get('password', '')
-    else:
-        app.config['AUTH_USERNAME'] = ''
-        app.config['AUTH_PASSWORD'] = ''
+        app.config['AUTH_USERS'] = auth_data.get('users', [])
 
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 

@@ -6,15 +6,22 @@
     <title>Upload App</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-<body>
+<body class="{% if session.authenticated %}theme-{{ session.role }}{% else %}theme-login{% endif %}">
     <div class="window">
         <div class="window-titlebar">
-            <span class="window-title">Upload App</span>
+            <span class="window-title">UPLOAD SYSTEM</span>
+            {% if session.authenticated %}
+            <span class="user-info">{{ session.username }} [{{ session.role }}]</span>
+            <div class="window-buttons">
+                <a href="{{ url_for('main.logout') }}" class="winbtn" style="text-decoration:none">✕</a>
+            </div>
+            {% else %}
             <div class="window-buttons">
                 <span class="winbtn winbtn-min">_</span>
                 <span class="winbtn winbtn-max">□</span>
                 <span class="winbtn winbtn-close">✕</span>
             </div>
+            {% endif %}
         </div>
         <div class="window-body">
             {% with messages = get_flashed_messages() %}
@@ -27,7 +34,10 @@
             {% block content %}{% endblock %}
         </div>
         <div class="window-statusbar">
-            <span class="status-text">Ready</span>
+            <span class="status-text">SYS.READY</span>
+            {% if session.authenticated %}
+            <span style="float:right">{{ session.username }}@{{ session.role }}</span>
+            {% endif %}
         </div>
     </div>
 </body>
